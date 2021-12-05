@@ -17,9 +17,13 @@ object SparkBooleanContion extends Serializable {
       .option("inferSchema", true)
       .load("/Users/minseop/minseop/spark/data/retail-data/by-day/2010-12-01.csv")
 
+    val DOTCodeFilter = col("StockCode") === "DOT"
+    val priceFilter = col("UnitPrice") > 600
+    val descriptionFilter = col("Description").contains("POSTAGE")
 
-
-
+    val df_filtered = df.withColumn("isExpensive", DOTCodeFilter.and(priceFilter.or(descriptionFilter)))
+      .where(col("isExpensive") === true)
+      .select("unitPrice", "StockCode", "Quantity")
 
     spark.stop()
   }
